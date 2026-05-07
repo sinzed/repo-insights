@@ -1,19 +1,20 @@
 import { HttpException, Injectable } from '@nestjs/common';
-
-export interface GitHubSearchRepositoriesResponse {
-  total_count: number;
-  incomplete_results: boolean;
-  items: unknown[];
-}
+import type { GithubSearchRepositoriesRaw } from '../infrastructure/github/github-search-repository.raw';
+import { GithubSearchRepositoriesMapper } from '../infrastructure/mappers/github-search-repositories.mapper';
+import { SearchRepositoriesResponseDto } from './dto/search-repositories-response.dto';
 
 @Injectable()
 export class RepositoriesService {
   private readonly searchUrl = 'https://api.github.com/search/repositories';
 
+  constructor(
+    private readonly githubSearchRepositoriesMapper: GithubSearchRepositoriesMapper,
+  ) {}
+
   async searchRepositories(
     language: string,
     createdAfter: string,
-  ): Promise<GitHubSearchRepositoriesResponse> {
+  ): Promise<SearchRepositoriesResponseDto> {
     const q = `language:${language} created:>${createdAfter}`;
     const url = new URL(this.searchUrl);
     url.searchParams.set('q', q);
@@ -35,6 +36,9 @@ export class RepositoriesService {
       );
     }
 
-    return response.json() as Promise<GitHubSearchRepositoriesResponse>;
+    const raw = (await response.json()) as GithubSearchRepositoriesRaw;
+    return this.githubSearchRepositoriesMapper.toSearchRepositoriesResponseDto(
+      raw,
+    );
   }
 }

@@ -1,4 +1,5 @@
 import { BadRequestException, Controller, Get, Query } from '@nestjs/common';
+import { SearchRepositoriesResponseDto } from './dto/search-repositories-response.dto';
 import { RepositoriesService } from './repositories.service';
 
 @Controller('repositories')
@@ -9,7 +10,7 @@ export class RepositoriesController {
   async getRepositories(
     @Query('language') language: string | undefined,
     @Query('createdAfter') createdAfter: string | undefined,
-  ) {
+  ): Promise<SearchRepositoriesResponseDto> {
     if (!language?.trim()) {
       throw new BadRequestException('Query parameter "language" is required');
     }
