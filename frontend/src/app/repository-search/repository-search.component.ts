@@ -2,7 +2,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
 import type { RepositoryItemDto } from '../repositories.api';
-import { RepositoriesApi } from '../repositories.api';
+import { getHttpApiErrorMessage, RepositoriesApi } from '../repositories.api';
 import { RepositoryListComponent } from '../repository-list/repository-list.component';
 import { RepositoryPagerComponent } from '../repository-pager/repository-pager.component';
 import { RepositorySearchFormComponent } from '../repository-search-form/repository-search-form.component';
@@ -26,7 +26,7 @@ export class RepositorySearchComponent {
   protected readonly pageSizeOptions = [10, 20, 30, 50, 100] as const;
 
   protected readonly language = signal('typescript');
-  protected readonly changedAfter = signal('2024-01-01');
+  protected readonly changedAfter = signal('2026-05-01');
 
   protected readonly page = signal(1);
   protected readonly perPage = signal(30);
@@ -94,7 +94,7 @@ export class RepositorySearchComponent {
       this.hasSearched.set(true);
     } catch (e) {
       this.items.set([]);
-      this.error.set(e instanceof Error ? e.message : String(e));
+      this.error.set(getHttpApiErrorMessage(e));
     } finally {
       this.isLoading.set(false);
     }
