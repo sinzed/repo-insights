@@ -1,7 +1,12 @@
-<div class="status">
-  @if (!isLoading() && !hasSearched()) {
+<div class="status" role="status" [attr.aria-busy]="isLoading()">
+  @if (isLoading()) {
+    <span class="loading">
+      <span class="spinner" aria-hidden="true"></span>
+      Loading repositories…
+    </span>
+  } @else if (!hasSearched()) {
     Enter filters and click Search.
-  } @else if (!isLoading() && itemsLength() === 0 && !hasError()) {
+  } @else if (itemsLength() === 0 && !hasError()) {
     No repositories on this page.
   } @else if (hasSearched()) {
     Page {{ page() }} of {{ totalPages() }} · {{ totalCount() }} total ·

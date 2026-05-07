@@ -35,5 +35,7 @@
     />
   }
 
-  <app-repository-list [items]="items()" />
+  <div class="listRegion" [class.listRegionLoading]="isLoading() && hasSearched()">
+    <app-repository-list [items]="items()" />
+  </div>
 </div>
