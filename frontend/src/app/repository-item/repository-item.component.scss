@@ -1,0 +1,39 @@
+.repo {
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.repoTop {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: baseline;
+}
+
+.repo a {
+  color: #a9c1ff;
+  text-decoration: none;
+  font-weight: 650;
+}
+
+.repo a:hover {
+  text-decoration: underline;
+}
+
+.meta {
+  margin-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+.desc {
+  margin-top: 8px;
+  font-size: 13px;
+  opacity: 0.95;
+  line-height: 1.35;
+}

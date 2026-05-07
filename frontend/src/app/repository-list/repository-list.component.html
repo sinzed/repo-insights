@@ -1,0 +1,5 @@
+<ul>
+  @for (repo of items(); track repo.id) {
+    <app-repository-item [repo]="repo" />
+  }
+</ul>

@@ -1,0 +1,29 @@
+<div class="form">
+  <div>
+    <label>
+      Language
+      <input
+        [ngModel]="language()"
+        (ngModelChange)="languageChange.emit($event)"
+        placeholder="e.g. typescript"
+        autocomplete="off"
+      />
+    </label>
+  </div>
+
+  <div>
+    <label>
+      Created after (YYYY-MM-DD)
+      <input
+        [ngModel]="changedAfter()"
+        (ngModelChange)="changedAfterChange.emit($event)"
+        placeholder="e.g. 2024-01-01"
+        autocomplete="off"
+      />
+    </label>
+  </div>
+
+  <button type="button" (click)="search.emit()" [disabled]="isLoading()">
+    @if (isLoading()) { Loading… } @else { Search }
+  </button>
+</div>

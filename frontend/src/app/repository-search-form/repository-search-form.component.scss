@@ -1,0 +1,37 @@
+.form {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 10px;
+  align-items: end;
+}
+
+label {
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+input {
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #0b1020;
+  color: inherit;
+}
+
+button {
+  height: 42px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #2b60ff;
+  color: white;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+button[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

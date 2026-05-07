@@ -1,0 +1,16 @@
+<li class="repo">
+  <div class="repoTop">
+    <a [href]="repo().htmlUrl" target="_blank" rel="noopener">
+      {{ repo().fullName }}
+    </a>
+    <div class="meta">
+      <span>⭐ {{ repo().stargazersCount }}</span>
+      <span>🍴 {{ repo().forksCount }}</span>
+      <span>@if (repo().language) { {{ repo().language }} } @else { N/A }</span>
+      <span>Score: {{ repo().rankScore.toFixed(2) }}</span>
+    </div>
+  </div>
+  @if (repo().description) {
+    <div class="desc">{{ repo().description }}</div>
+  }
+</li>

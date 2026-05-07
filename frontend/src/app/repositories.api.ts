@@ -24,10 +24,17 @@ export interface SearchRepositoriesResponseDto {
 export class RepositoriesApi {
   private readonly http = inject(HttpClient);
 
-  searchRepositories(language: string, changedAfter: string) {
+  searchRepositories(
+    language: string,
+    changedAfter: string,
+    page = 1,
+    perPage = 30,
+  ) {
     const params = new HttpParams()
       .set('language', language)
-      .set('changedAfter', changedAfter );
+      .set('changedAfter', changedAfter)
+      .set('page', String(page))
+      .set('perPage', String(perPage));
 
     // Uses Angular dev proxy (see `proxy.conf.json`)
     return this.http.get<SearchRepositoriesResponseDto>('/repositories', {

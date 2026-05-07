@@ -1,0 +1,39 @@
+<div class="panel">
+  <app-repository-search-form
+    [language]="language()"
+    [changedAfter]="changedAfter()"
+    [isLoading]="isLoading()"
+    (languageChange)="language.set($event)"
+    (changedAfterChange)="changedAfter.set($event)"
+    (search)="search()"
+  />
+
+  @if (error()) {
+    <div class="error">{{ error() }}</div>
+  }
+
+  <app-repository-search-status
+    [isLoading]="isLoading()"
+    [hasSearched]="hasSearched()"
+    [itemsLength]="items().length"
+    [hasError]="hasError()"
+    [page]="page()"
+    [totalPages]="totalPages()"
+    [totalCount]="totalCount()"
+  />
+
+  @if (hasSearched()) {
+    <app-repository-pager
+      [page]="page()"
+      [totalPages]="totalPages()"
+      [perPage]="perPage()"
+      [pageSizeOptions]="pageSizeOptions"
+      [isLoading]="isLoading()"
+      (previous)="goToPreviousPage()"
+      (next)="goToNextPage()"
+      (perPageChange)="onPerPageChange($event)"
+    />
+  }
+
+  <app-repository-list [items]="items()" />
+</div>

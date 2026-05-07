@@ -1,0 +1,30 @@
+<div class="pager">
+  <label class="perPage">
+    Per page
+    <select
+      [ngModel]="perPage()"
+      (ngModelChange)="perPageChange.emit(+$event)"
+      [disabled]="isLoading()"
+    >
+      @for (n of pageSizeOptions(); track n) {
+        <option [ngValue]="n">{{ n }}</option>
+      }
+    </select>
+  </label>
+  <div class="pagerButtons">
+    <button
+      type="button"
+      (click)="previous.emit()"
+      [disabled]="isLoading() || page() <= 1"
+    >
+      Previous
+    </button>
+    <button
+      type="button"
+      (click)="next.emit()"
+      [disabled]="isLoading() || page() >= totalPages()"
+    >
+      Next
+    </button>
+  </div>
+</div>

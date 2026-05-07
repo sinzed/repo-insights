@@ -1,0 +1,44 @@
+.pager {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pagerButtons {
+  display: flex;
+  gap: 8px;
+}
+
+.pagerButtons button {
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #2b60ff;
+  color: white;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.pagerButtons button[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.perPage select {
+  margin-top: 6px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #0b1020;
+  color: inherit;
+  min-width: 88px;
+}
+
+.perPage {
+  font-size: 12px;
+  opacity: 0.85;
+}

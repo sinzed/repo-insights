@@ -1,0 +1,10 @@
+<div class="status">
+  @if (!isLoading() && !hasSearched()) {
+    Enter filters and click Search.
+  } @else if (!isLoading() && itemsLength() === 0 && !hasError()) {
+    No repositories on this page.
+  } @else if (hasSearched()) {
+    Page {{ page() }} of {{ totalPages() }} · {{ totalCount() }} total ·
+    {{ itemsLength() }} on this page
+  }
+</div>
