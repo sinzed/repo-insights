@@ -17,7 +17,7 @@ export class App {
   private readonly repositoriesApi = inject(RepositoriesApi);
 
   protected readonly language = signal('typescript');
-  protected readonly createdAfter = signal('2024-01-01');
+  protected readonly changedAfter = signal('2024-01-01');
 
   protected readonly isLoading = signal(false);
   protected readonly error = signal<string | null>(null);
@@ -25,7 +25,7 @@ export class App {
 
   protected async search() {
     const language = this.language().trim();
-    const createdAfter = this.createdAfter().trim();
+    const changedAfter = this.changedAfter().trim();
 
     this.error.set(null);
     this.isLoading.set(true);
@@ -33,7 +33,7 @@ export class App {
 
     try {
       const response = await firstValueFrom(
-        this.repositoriesApi.searchRepositories(language, createdAfter),
+        this.repositoriesApi.searchRepositories(language, changedAfter),
       );
       this.items.set(response.items ?? []);
     } catch (e) {

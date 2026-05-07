@@ -15,7 +15,6 @@ export class GithubSearchRepositoriesMapper {
   ): SearchRepositoriesResponseDto {
     const dto = new SearchRepositoriesResponseDto();
     dto.totalCount = raw.total_count;
-    dto.incompleteResults = raw.incomplete_results;
     dto.items = raw.items.map((item) => this.toRepositoryItemDto(item));
     return dto;
   }
@@ -30,6 +29,7 @@ export class GithubSearchRepositoriesMapper {
     dto.htmlUrl = item.html_url;
     dto.description = item.description;
     dto.stargazersCount = item.stargazers_count;
+    dto.forksCount = item.forks_count;
     dto.language = item.language;
     dto.createdAt = item.created_at;
     dto.updatedAt = item.updated_at;

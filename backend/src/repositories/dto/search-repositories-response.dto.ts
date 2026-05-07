@@ -5,13 +5,14 @@ export class RepositoryItemDto {
   htmlUrl!: string;
   description!: string | null;
   stargazersCount!: number;
+  forksCount!: number;
   language!: string | null;
   createdAt!: string;
   updatedAt!: string;
+  rankScore: number;
 }
 
 export class SearchRepositoriesResponseDto {
   totalCount!: number;
-  incompleteResults!: boolean;
   items!: RepositoryItemDto[];
 }

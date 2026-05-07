@@ -17,7 +17,6 @@ export interface RepositoryItemDto {
 
 export interface SearchRepositoriesResponseDto {
   totalCount: number;
-  incompleteResults: boolean;
   items: RepositoryItemDto[];
 }
 
@@ -25,10 +24,10 @@ export interface SearchRepositoriesResponseDto {
 export class RepositoriesApi {
   private readonly http = inject(HttpClient);
 
-  searchRepositories(language: string, createdAfter: string) {
+  searchRepositories(language: string, changedAfter: string) {
     const params = new HttpParams()
       .set('language', language)
-      .set('createdAfter', createdAfter);
+      .set('changedAfter', changedAfter );
 
     // Uses Angular dev proxy (see `proxy.conf.json`)
     return this.http.get<SearchRepositoriesResponseDto>('/repositories', {
