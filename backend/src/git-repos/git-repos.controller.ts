@@ -1,4 +1,4 @@
-import { BadRequestException, Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiOkResponse,
@@ -6,20 +6,9 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
+import { SearchGitReposQueryDto } from './dto/search-git-repos-query.dto';
 import { SearchGitReposResponseDto } from './dto/search-git-repos-response.dto';
 import { GitReposService } from './git-repos.service';
-
-function parsePositiveInt(
-  value: string | undefined,
-  defaultValue: number,
-): number {
-  if (value === undefined) return defaultValue;
-  const trimmed = value.trim();
-  if (!trimmed) return defaultValue;
-  const parsed = Number.parseInt(trimmed, 10);
-  if (!Number.isFinite(parsed) || parsed <= 0) return defaultValue;
-  return parsed;
-}
 
 @ApiTags('git-repos')
 @Controller('git-repos')
@@ -57,28 +46,13 @@ export class GitReposController {
     description: 'Missing or invalid query parameters',
   })
   async getGitRepos(
-    @Query('language') language: string | undefined,
-    @Query('changedAfter') changedAfter: string | undefined,
-    @Query('page') pageRaw: string | undefined,
-    @Query('perPage') perPageRaw: string | undefined,
+    @Query() query: SearchGitReposQueryDto,
   ): Promise<SearchGitReposResponseDto> {
-    if (!language?.trim()) {
-      throw new BadRequestException('Query parameter "language" is required');
-    }
-    if (!changedAfter?.trim()) {
-      throw new BadRequestException(
-        'Query parameter "changedAfter" is required',
-      );
-    }
-
-    const page = parsePositiveInt(pageRaw, 1);
-    const perPage = Math.min(parsePositiveInt(perPageRaw, 30), 100);
-
     return this.gitReposService.searchGitRepos(
-      language.trim(),
-      changedAfter.trim(),
-      page,
-      perPage,
+      query.language,
+      query.changedAfter,
+      query.page ?? 1,
+      query.perPage ?? 30,
     );
   }
 }
