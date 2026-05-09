@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { GithubSearchGitReposMapper } from './infrastructure/mappers/github-search-git-repos.mapper';
 import { GitReposController } from './git-repos/git-repos.controller';
@@ -8,7 +7,7 @@ import { GitReposService } from './git-repos/git-repos.service';
 
 @Module({
   imports: [],
-  controllers: [AppController, GitReposController],
+  controllers: [GitReposController],
   providers: [
     AppService,
     GithubSearchGitReposMapper,
