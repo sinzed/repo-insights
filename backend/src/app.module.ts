@@ -1,19 +1,19 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { GithubSearchRepositoriesMapper } from './infrastructure/mappers/github-search-repositories.mapper';
-import { RepositoriesController } from './repositories/repositories.controller';
-import { RepositoryScoringService } from './repositories/repository-scoring.service';
-import { RepositoriesService } from './repositories/repositories.service';
+import { GithubSearchGitReposMapper } from './infrastructure/mappers/github-search-git-repos.mapper';
+import { GitReposController } from './git-repos/git-repos.controller';
+import { RepositoryScoringService } from './git-repos/repository-scoring.service';
+import { GitReposService } from './git-repos/git-repos.service';
 
 @Module({
   imports: [],
-  controllers: [AppController, RepositoriesController],
+  controllers: [AppController, GitReposController],
   providers: [
     AppService,
-    GithubSearchRepositoriesMapper,
+    GithubSearchGitReposMapper,
     RepositoryScoringService,
-    RepositoriesService,
+    GitReposService,
   ],
 })
 export class AppModule {}

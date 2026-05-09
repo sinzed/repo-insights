@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, input } from '@angular/core';
-import type { RepositoryItemDto } from '../repositories.api';
+import type { RepositoryItemDto } from '../git-repos.api';
 
 @Component({
   selector: 'app-repository-item',

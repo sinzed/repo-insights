@@ -35,7 +35,7 @@ export class RepositoryItemDto {
   rankScore!: number;
 }
 
-export class SearchRepositoriesResponseDto {
+export class SearchGitReposResponseDto {
   @ApiProperty({ example: 460_603 })
   totalCount!: number;
 

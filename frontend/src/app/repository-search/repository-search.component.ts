@@ -1,8 +1,8 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
-import type { RepositoryItemDto } from '../repositories.api';
-import { getHttpApiErrorMessage, RepositoriesApi } from '../repositories.api';
+import type { RepositoryItemDto } from '../git-repos.api';
+import { getHttpApiErrorMessage, GitReposApi } from '../git-repos.api';
 import { RepositoryListComponent } from '../repository-list/repository-list.component';
 import { RepositoryPagerComponent } from '../repository-pager/repository-pager.component';
 import { RepositorySearchFormComponent } from '../repository-search-form/repository-search-form.component';
@@ -20,7 +20,7 @@ import { RepositorySearchStatusComponent } from '../repository-search-status/rep
   styleUrl: './repository-search.component.scss',
 })
 export class RepositorySearchComponent {
-  private readonly repositoriesApi = inject(RepositoriesApi);
+  private readonly gitReposApi = inject(GitReposApi);
 
   /** Must match backend max per page (100). */
   protected readonly pageSizeOptions = [10, 20, 30, 50, 100] as const;
@@ -82,7 +82,7 @@ export class RepositorySearchComponent {
 
     try {
       const response = await firstValueFrom(
-        this.repositoriesApi.searchRepositories(
+        this.gitReposApi.searchGitRepos(
           language,
           changedAfter,
           this.page(),

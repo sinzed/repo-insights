@@ -34,16 +34,16 @@ npm install
 npm start
 ```
 
-Open the app at [http://localhost:4200](http://localhost:4200). In development, Angular proxies `/repositories` to the backend (`frontend/proxy.conf.json` → `http://localhost:3000`).
+Open the app at [http://localhost:4200](http://localhost:4200). In development, Angular proxies `/git-repos` to the backend (`frontend/proxy.conf.json` → `http://localhost:3000`).
 
 ## Project layout
 
-- `backend/` — NestJS app: `GET /repositories` (query: `language`, `changedAfter`, optional `page`, `perPage` capped at 100).
+- `backend/` — NestJS app: `GET /git-repos` (query: `language`, `changedAfter`, optional `page`, `perPage` capped at 100).
 - `frontend/` — Angular app: search form, list, pagination, error handling for API failures.
 
 ## API and Swagger
 
-- **Search:** `GET /repositories?language=…&changedAfter=…&page=1&perPage=30`
+- **Search:** `GET /git-repos?language=…&changedAfter=…&page=1&perPage=30`
 - **OpenAPI / try-it:** [http://localhost:3000/swagger](http://localhost:3000/swagger) (with the backend running).
 
 ## Configuration

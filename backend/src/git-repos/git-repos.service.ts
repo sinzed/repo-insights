@@ -1,25 +1,25 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import type { GithubSearchRepositoriesRaw } from '../infrastructure/github/github-search-repository.raw';
-import { GithubSearchRepositoriesMapper } from '../infrastructure/mappers/github-search-repositories.mapper';
-import { SearchRepositoriesResponseDto } from './dto/search-repositories-response.dto';
+import type { GithubSearchGitReposRaw } from '../infrastructure/github/github-search-repository.raw';
+import { GithubSearchGitReposMapper } from '../infrastructure/mappers/github-search-git-repos.mapper';
+import { SearchGitReposResponseDto } from './dto/search-git-repos-response.dto';
 import { RepositoryScoringService } from './repository-scoring.service';
 
 @Injectable()
-export class RepositoriesService {
+export class GitReposService {
   private readonly searchUrl = 'https://api.github.com/search/repositories';
   private readonly defaultPerPage = 30;
 
   constructor(
-    private readonly githubSearchRepositoriesMapper: GithubSearchRepositoriesMapper,
+    private readonly githubSearchGitReposMapper: GithubSearchGitReposMapper,
     private readonly repositoryScoringService: RepositoryScoringService,
   ) {}
 
-  async searchRepositories(
+  async searchGitRepos(
     language: string,
     changedAfter: string,
     page = 1,
     perPage = this.defaultPerPage,
-  ): Promise<SearchRepositoriesResponseDto> {
+  ): Promise<SearchGitReposResponseDto> {
     const q = `language:${language} pushed:>${changedAfter}`;
     const url = new URL(this.searchUrl);
     url.searchParams.set('q', q);
@@ -48,9 +48,9 @@ export class RepositoriesService {
       );
     }
 
-    let raw: GithubSearchRepositoriesRaw;
+    let raw: GithubSearchGitReposRaw;
     try {
-      raw = (await response.json()) as GithubSearchRepositoriesRaw;
+      raw = (await response.json()) as GithubSearchGitReposRaw;
     } catch {
       throw new HttpException(
         {
@@ -63,7 +63,7 @@ export class RepositoriesService {
       );
     }
     const dto =
-      this.githubSearchRepositoriesMapper.toSearchRepositoriesResponseDto(raw);
+      this.githubSearchGitReposMapper.toSearchGitReposResponseDto(raw);
 
     for (const item of dto.items) {
       item.rankScore = this.repositoryScoringService.computeRankScore(item);

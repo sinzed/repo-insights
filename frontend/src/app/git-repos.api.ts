@@ -19,7 +19,7 @@ export interface RepositoryItemDto {
   rankScore: number;
 }
 
-export interface SearchRepositoriesResponseDto {
+export interface SearchGitReposResponseDto {
   totalCount: number;
   items: RepositoryItemDto[];
 }
@@ -55,10 +55,10 @@ export function getHttpApiErrorMessage(err: unknown): string {
 }
 
 @Injectable({ providedIn: 'root' })
-export class RepositoriesApi {
+export class GitReposApi {
   private readonly http = inject(HttpClient);
 
-  searchRepositories(
+  searchGitRepos(
     language: string,
     changedAfter: string,
     page = 1,
@@ -71,9 +71,8 @@ export class RepositoriesApi {
       .set('perPage', String(perPage));
 
     // Uses Angular dev proxy (see `proxy.conf.json`)
-    return this.http.get<SearchRepositoriesResponseDto>('/repositories', {
+    return this.http.get<SearchGitReposResponseDto>('/git-repos', {
       params,
     });
   }
 }
-

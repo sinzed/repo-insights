@@ -6,8 +6,8 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { SearchRepositoriesResponseDto } from './dto/search-repositories-response.dto';
-import { RepositoriesService } from './repositories.service';
+import { SearchGitReposResponseDto } from './dto/search-git-repos-response.dto';
+import { GitReposService } from './git-repos.service';
 
 function parsePositiveInt(
   value: string | undefined,
@@ -21,13 +21,13 @@ function parsePositiveInt(
   return parsed;
 }
 
-@ApiTags('repositories')
-@Controller('repositories')
-export class RepositoriesController {
-  constructor(private readonly repositoriesService: RepositoriesService) {}
+@ApiTags('git-repos')
+@Controller('git-repos')
+export class GitReposController {
+  constructor(private readonly gitReposService: GitReposService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Search repositories (GitHub-backed)' })
+  @ApiOperation({ summary: 'Search Git repos (GitHub-backed)' })
   @ApiQuery({
     name: 'language',
     required: true,
@@ -52,16 +52,16 @@ export class RepositoriesController {
     example: 30,
     description: 'Page size (max 100)',
   })
-  @ApiOkResponse({ type: SearchRepositoriesResponseDto })
+  @ApiOkResponse({ type: SearchGitReposResponseDto })
   @ApiBadRequestResponse({
     description: 'Missing or invalid query parameters',
   })
-  async getRepositories(
+  async getGitRepos(
     @Query('language') language: string | undefined,
     @Query('changedAfter') changedAfter: string | undefined,
     @Query('page') pageRaw: string | undefined,
     @Query('perPage') perPageRaw: string | undefined,
-  ): Promise<SearchRepositoriesResponseDto> {
+  ): Promise<SearchGitReposResponseDto> {
     if (!language?.trim()) {
       throw new BadRequestException('Query parameter "language" is required');
     }
@@ -74,7 +74,7 @@ export class RepositoriesController {
     const page = parsePositiveInt(pageRaw, 1);
     const perPage = Math.min(parsePositiveInt(perPageRaw, 30), 100);
 
-    return this.repositoriesService.searchRepositories(
+    return this.gitReposService.searchGitRepos(
       language.trim(),
       changedAfter.trim(),
       page,

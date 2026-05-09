@@ -2,12 +2,12 @@
   @if (isLoading()) {
     <span class="loading">
       <span class="spinner" aria-hidden="true"></span>
-      Loading repositories…
+      Loading git repos…
     </span>
   } @else if (!hasSearched()) {
     Enter filters and click Search.
   } @else if (itemsLength() === 0 && !hasError()) {
-    No repositories on this page.
+    No git repos on this page.
   } @else if (hasSearched()) {
     Page {{ page() }} of {{ totalPages() }} · {{ totalCount() }} total ·
     {{ itemsLength() }} on this page

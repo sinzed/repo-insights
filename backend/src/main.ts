@@ -10,7 +10,7 @@ async function bootstrap() {
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Repo Insights API')
-    .setDescription('HTTP API for repository search and insights.')
+    .setDescription('HTTP API for Git repo search and insights.')
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);

@@ -12,7 +12,7 @@ export interface GithubSearchRepositoryItemRaw {
   updated_at: string;
 }
 
-export interface GithubSearchRepositoriesRaw {
+export interface GithubSearchGitReposRaw {
   total_count: number;
   incomplete_results: boolean;
   items: GithubSearchRepositoryItemRaw[];

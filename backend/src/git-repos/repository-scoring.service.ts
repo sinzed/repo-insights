@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { RepositoryItemDto } from './dto/search-repositories-response.dto';
+import { RepositoryItemDto } from './dto/search-git-repos-response.dto';
 
 @Injectable()
 export class RepositoryScoringService {

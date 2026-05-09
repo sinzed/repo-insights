@@ -1,19 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import type {
-  GithubSearchRepositoriesRaw,
+  GithubSearchGitReposRaw,
   GithubSearchRepositoryItemRaw,
 } from '../github/github-search-repository.raw';
 import {
   RepositoryItemDto,
-  SearchRepositoriesResponseDto,
-} from '../../repositories/dto/search-repositories-response.dto';
+  SearchGitReposResponseDto,
+} from '../../git-repos/dto/search-git-repos-response.dto';
 
 @Injectable()
-export class GithubSearchRepositoriesMapper {
-  toSearchRepositoriesResponseDto(
-    raw: GithubSearchRepositoriesRaw,
-  ): SearchRepositoriesResponseDto {
-    const dto = new SearchRepositoriesResponseDto();
+export class GithubSearchGitReposMapper {
+  toSearchGitReposResponseDto(
+    raw: GithubSearchGitReposRaw,
+  ): SearchGitReposResponseDto {
+    const dto = new SearchGitReposResponseDto();
     dto.totalCount = raw.total_count;
     dto.items = raw.items.map((item) => this.toRepositoryItemDto(item));
     return dto;

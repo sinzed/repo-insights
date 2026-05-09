@@ -1,5 +1,5 @@
 import { RepositoryScoringService } from './repository-scoring.service';
-import { RepositoryItemDto } from './dto/search-repositories-response.dto';
+import { RepositoryItemDto } from './dto/search-git-repos-response.dto';
 
 function makeRepo(overrides: Partial<RepositoryItemDto> = {}): RepositoryItemDto {
   return {
