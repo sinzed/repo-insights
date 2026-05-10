@@ -3,13 +3,12 @@ import { RepositoryItemDto } from './dto/search-git-repos-response.dto';
 
 @Injectable()
 export class RepositoryScoringService {
-
   computeRankScore(item: RepositoryItemDto): number {
     const stars = Math.max(0, item.stargazersCount ?? 0);
     const forks = Math.max(0, item.forksCount ?? 0);
 
     const daysSinceUpdate = this.daysSince(item.updatedAt);
-    const recency = Math.exp(-daysSinceUpdate / 30); 
+    const recency = Math.exp(-daysSinceUpdate / 30);
     const starsScore = Math.log1p(stars) * 8;
     const forksScore = Math.log1p(forks) * 5;
     const recencyScore = recency * 15;
@@ -28,4 +27,3 @@ export class RepositoryScoringService {
     return Number.isFinite(ms) ? ms : 0;
   }
 }
-

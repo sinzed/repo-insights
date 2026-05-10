@@ -1,9 +1,21 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { githubRestRequestHeaders } from '../infrastructure/github/github-api-headers';
+import { GithubApiRateLimiter } from '../infrastructure/github/github-api-rate-limiter';
 import type { GithubSearchGitReposRaw } from '../infrastructure/github/github-search-repository.raw';
 import { GithubSearchGitReposMapper } from '../infrastructure/mappers/github-search-git-repos.mapper';
 import { SearchGitReposResponseDto } from './dto/search-git-repos-response.dto';
 import { isAllowedGithubSearchLanguage } from './github-search-language';
 import { RepositoryScoringService } from './repository-scoring.service';
+
+/** Wait between retries after any GitHub transport or response error. */
+const GITHUB_ERROR_RETRY_DELAY_MS = 6_000;
+
+/** Initial attempt plus retries after {@link GITHUB_ERROR_RETRY_DELAY_MS}. */
+const GITHUB_SEARCH_MAX_ATTEMPTS = 3;
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 @Injectable()
 export class GitReposService {
@@ -13,6 +25,7 @@ export class GitReposService {
   constructor(
     private readonly githubSearchGitReposMapper: GithubSearchGitReposMapper,
     private readonly repositoryScoringService: RepositoryScoringService,
+    private readonly githubApiRateLimiter: GithubApiRateLimiter,
   ) {}
 
   async searchGitRepos(
@@ -25,7 +38,8 @@ export class GitReposService {
       throw new HttpException(
         {
           statusCode: HttpStatus.BAD_REQUEST,
-          message: 'language must be one of the supported GitHub language values',
+          message:
+            'language must be one of the supported GitHub language values',
           error: 'Bad Request',
         },
         HttpStatus.BAD_REQUEST,
@@ -39,36 +53,76 @@ export class GitReposService {
     url.searchParams.set('page', String(page));
     url.searchParams.set('per_page', String(perPage));
 
-    const response = await fetch(url, {
-      headers: {
-        Accept: 'application/vnd.github+json',
-        'User-Agent': 'repo-insights-backend',
-      },
-    });
+    const requestInit: RequestInit = {
+      headers: githubRestRequestHeaders(),
+    };
 
-    if (!response.ok) {
-      const message = this.messageForGithubFailure(response.status);
-      throw new HttpException(
-        {
-          statusCode: HttpStatus.BAD_GATEWAY,
-          message,
-          error: 'Bad Gateway',
-          code: 'GITHUB_UPSTREAM_ERROR',
-        },
-        HttpStatus.BAD_GATEWAY,
-      );
+    let raw: GithubSearchGitReposRaw | undefined;
+    let lastHttpStatus: number | undefined;
+    let hadFetchFailure = false;
+    let hadInvalidJson = false;
+
+    for (let attempt = 0; attempt < GITHUB_SEARCH_MAX_ATTEMPTS; attempt++) {
+      if (attempt > 0) {
+        await sleep(GITHUB_ERROR_RETRY_DELAY_MS);
+      }
+
+      try {
+        const response = await this.githubApiRateLimiter.schedule(() =>
+          fetch(url, requestInit),
+        );
+
+        if (!response.ok) {
+          lastHttpStatus = response.status;
+          continue;
+        }
+
+        try {
+          raw = (await response.json()) as GithubSearchGitReposRaw;
+          break;
+        } catch {
+          hadInvalidJson = true;
+          lastHttpStatus = undefined;
+          continue;
+        }
+      } catch {
+        hadFetchFailure = true;
+        lastHttpStatus = undefined;
+        continue;
+      }
     }
 
-    let raw: GithubSearchGitReposRaw;
-    try {
-      raw = (await response.json()) as GithubSearchGitReposRaw;
-    } catch {
+    if (raw === undefined) {
+      if (lastHttpStatus !== undefined) {
+        throw new HttpException(
+          {
+            statusCode: HttpStatus.BAD_GATEWAY,
+            message: this.messageForGithubFailure(lastHttpStatus),
+            error: 'Bad Gateway',
+            code: 'GITHUB_UPSTREAM_ERROR',
+          },
+          HttpStatus.BAD_GATEWAY,
+        );
+      }
+      if (hadInvalidJson) {
+        throw new HttpException(
+          {
+            statusCode: HttpStatus.BAD_GATEWAY,
+            message: 'Received an invalid response from GitHub.',
+            error: 'Bad Gateway',
+            code: 'GITHUB_INVALID_PAYLOAD',
+          },
+          HttpStatus.BAD_GATEWAY,
+        );
+      }
       throw new HttpException(
         {
           statusCode: HttpStatus.BAD_GATEWAY,
-          message: 'Received an invalid response from GitHub.',
+          message: hadFetchFailure
+            ? 'Could not reach GitHub after retries.'
+            : 'GitHub search failed after retries.',
           error: 'Bad Gateway',
-          code: 'GITHUB_INVALID_PAYLOAD',
+          code: 'GITHUB_UPSTREAM_ERROR',
         },
         HttpStatus.BAD_GATEWAY,
       );

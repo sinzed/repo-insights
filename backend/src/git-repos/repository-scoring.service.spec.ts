@@ -4,7 +4,9 @@ import { RepositoryItemDto } from './dto/search-git-repos-response.dto';
 const FROZEN_NOW = new Date('2026-01-31T00:00:00.000Z');
 const MS_PER_DAY = 86_400_000;
 
-function makeRepo(overrides: Partial<RepositoryItemDto> = {}): RepositoryItemDto {
+function makeRepo(
+  overrides: Partial<RepositoryItemDto> = {},
+): RepositoryItemDto {
   return {
     id: 1,
     name: 'repo',
@@ -52,7 +54,10 @@ describe('RepositoryScoringService', () => {
       jest.useFakeTimers();
       jest.setSystemTime(now);
 
-      const base = makeRepo({ updatedAt: now.toISOString(), stargazersCount: 100 });
+      const base = makeRepo({
+        updatedAt: now.toISOString(),
+        stargazersCount: 100,
+      });
       const low = service.computeRankScore({ ...base, forksCount: 1 });
       const high = service.computeRankScore({ ...base, forksCount: 100 });
 
@@ -83,7 +88,11 @@ describe('RepositoryScoringService', () => {
 
     it('handles invalid updatedAt without NaN', () => {
       const score = service.computeRankScore(
-        makeRepo({ updatedAt: 'not-a-date', stargazersCount: 1, forksCount: 1 }),
+        makeRepo({
+          updatedAt: 'not-a-date',
+          stargazersCount: 1,
+          forksCount: 1,
+        }),
       );
       expect(Number.isFinite(score)).toBe(true);
     });
@@ -219,12 +228,12 @@ describe('RepositoryScoringService', () => {
         (_label, stars, forks, daysAgo, expected) => {
           const result = service.computeRankScore(
             makeRepo({
-              stargazersCount: stars as number,
-              forksCount: forks as number,
-              updatedAt: updatedNDaysAgo(daysAgo as number),
+              stargazersCount: stars,
+              forksCount: forks,
+              updatedAt: updatedNDaysAgo(daysAgo),
             }),
           );
-          expect(result).toBeCloseTo(expected as number, 2);
+          expect(result).toBeCloseTo(expected, 2);
         },
       );
 
@@ -295,7 +304,9 @@ describe('RepositoryScoringService', () => {
       });
 
       it('treats a future updatedAt as "today" (max recency)', () => {
-        const future = new Date(FROZEN_NOW.getTime() + 30 * MS_PER_DAY).toISOString();
+        const future = new Date(
+          FROZEN_NOW.getTime() + 30 * MS_PER_DAY,
+        ).toISOString();
         const result = service.computeRankScore(
           makeRepo({ stargazersCount: 0, forksCount: 0, updatedAt: future }),
         );
@@ -304,12 +315,14 @@ describe('RepositoryScoringService', () => {
 
       it('treats an unparseable updatedAt as "ancient" (recency ~ 0)', () => {
         const result = service.computeRankScore(
-          makeRepo({ stargazersCount: 0, forksCount: 0, updatedAt: 'not-a-date' }),
+          makeRepo({
+            stargazersCount: 0,
+            forksCount: 0,
+            updatedAt: 'not-a-date',
+          }),
         );
         expect(result).toBeCloseTo(0.0, 2);
       });
     });
   });
-
 });
-
