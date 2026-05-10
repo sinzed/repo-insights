@@ -1,6 +1,10 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { githubRestRequestHeaders } from '../infrastructure/github/github-api-headers';
 import { GithubApiRateLimiter } from '../infrastructure/github/github-api-rate-limiter';
+import {
+  isAbortError,
+  resolveGithubFetchTimeoutMs,
+} from '../infrastructure/github/github-fetch-timeout';
 import type { GithubSearchGitReposRaw } from '../infrastructure/github/github-search-repository.raw';
 import { GithubSearchGitReposMapper } from '../infrastructure/mappers/github-search-git-repos.mapper';
 import { SearchGitReposResponseDto } from './dto/search-git-repos-response.dto';
@@ -53,14 +57,15 @@ export class GitReposService {
     url.searchParams.set('page', String(page));
     url.searchParams.set('per_page', String(perPage));
 
-    const requestInit: RequestInit = {
-      headers: githubRestRequestHeaders(),
-    };
+    const headers = githubRestRequestHeaders();
 
     let raw: GithubSearchGitReposRaw | undefined;
     let lastHttpStatus: number | undefined;
     let hadFetchFailure = false;
+    let hadAbortTimeout = false;
     let hadInvalidJson = false;
+
+    const fetchTimeoutMs = resolveGithubFetchTimeoutMs();
 
     for (let attempt = 0; attempt < GITHUB_SEARCH_MAX_ATTEMPTS; attempt++) {
       if (attempt > 0) {
@@ -69,7 +74,10 @@ export class GitReposService {
 
       try {
         const response = await this.githubApiRateLimiter.schedule(() =>
-          fetch(url, requestInit),
+          fetch(url, {
+            headers,
+            signal: AbortSignal.timeout(fetchTimeoutMs),
+          }),
         );
 
         if (!response.ok) {
@@ -85,9 +93,12 @@ export class GitReposService {
           lastHttpStatus = undefined;
           continue;
         }
-      } catch {
+      } catch (error: unknown) {
         hadFetchFailure = true;
         lastHttpStatus = undefined;
+        if (isAbortError(error)) {
+          hadAbortTimeout = true;
+        }
         continue;
       }
     }
@@ -119,7 +130,9 @@ export class GitReposService {
         {
           statusCode: HttpStatus.BAD_GATEWAY,
           message: hadFetchFailure
-            ? 'Could not reach GitHub after retries.'
+            ? hadAbortTimeout
+              ? 'GitHub did not respond in time after retries.'
+              : 'Could not reach GitHub after retries.'
             : 'GitHub search failed after retries.',
           error: 'Bad Gateway',
           code: 'GITHUB_UPSTREAM_ERROR',
