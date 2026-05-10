@@ -3,12 +3,10 @@ import {
   ApiBadRequestResponse,
   ApiOkResponse,
   ApiOperation,
-  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { SearchGitReposQueryDto } from './dto/search-git-repos-query.dto';
 import { SearchGitReposResponseDto } from './dto/search-git-repos-response.dto';
-import { GithubSearchLanguage } from './github-search-language';
 import { GitReposService } from './git-repos.service';
 
 @ApiTags('git-repos')
@@ -18,32 +16,6 @@ export class GitReposController {
 
   @Get()
   @ApiOperation({ summary: 'Search Git repos (GitHub-backed)' })
-  @ApiQuery({
-    name: 'language',
-    required: true,
-    enum: GithubSearchLanguage,
-    example: GithubSearchLanguage.TypeScript,
-    description:
-      'Allowed GitHub repository language (see GithubSearchLanguage enum).',
-  })
-  @ApiQuery({
-    name: 'changedAfter',
-    required: true,
-    example: '2026-05-01',
-    description: 'Only repos with push activity after this date (YYYY-MM-DD)',
-  })
-  @ApiQuery({
-    name: 'page',
-    required: false,
-    example: 1,
-    description: '1-based page number',
-  })
-  @ApiQuery({
-    name: 'perPage',
-    required: false,
-    example: 30,
-    description: 'Page size (max 100)',
-  })
   @ApiOkResponse({ type: SearchGitReposResponseDto })
   @ApiBadRequestResponse({
     description: 'Missing or invalid query parameters',

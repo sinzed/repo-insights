@@ -83,6 +83,7 @@ export class SearchGitReposQueryDto {
   changedAfter!: string;
 
   @ApiPropertyOptional({
+    type: 'integer',
     example: 1,
     description: '1-based page number',
     default: 1,
@@ -98,9 +99,12 @@ export class SearchGitReposQueryDto {
   page?: number;
 
   @ApiPropertyOptional({
+    type: 'integer',
     example: 30,
     description: 'Page size (max 100)',
     default: 30,
+    minimum: 1,
+    maximum: 100,
   })
   @IsOptional()
   @Transform(({ value }: { value: unknown }) => {
