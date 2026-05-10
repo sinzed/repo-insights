@@ -22,4 +22,11 @@ export class RepositorySearchFormComponent {
   readonly languageChange = output<string>();
   readonly changedAfterChange = output<string>();
   readonly search = output<void>();
+
+  onSubmit(): void {
+    if (this.isLoading()) {
+      return;
+    }
+    this.search.emit();
+  }
 }

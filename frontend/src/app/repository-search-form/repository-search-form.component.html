@@ -1,10 +1,12 @@
-<div class="form">
+<form class="form" (ngSubmit)="onSubmit()">
   <div class="field">
     <label>
       Language
       <select
+        name="language"
         [ngModel]="language()"
         (ngModelChange)="languageChange.emit($event)"
+        [ngModelOptions]="{ standalone: true }"
         [attr.aria-invalid]="languageError() ? 'true' : null"
         [attr.aria-describedby]="languageError() ? 'language-error' : null"
       >
@@ -23,8 +25,10 @@
       Changed after (YYYY-MM-DD)
       <input
         type="date"
+        name="changedAfter"
         [ngModel]="changedAfter()"
         (ngModelChange)="changedAfterChange.emit($event)"
+        [ngModelOptions]="{ standalone: true }"
         [attr.aria-invalid]="changedAfterError() ? 'true' : null"
         [attr.aria-describedby]="changedAfterError() ? 'changed-after-error' : null"
       />
@@ -34,7 +38,7 @@
     }
   </div>
 
-  <button type="button" (click)="search.emit()" [disabled]="isLoading()">
+  <button type="submit" [disabled]="isLoading()">
     @if (isLoading()) { Loading… } @else { Search }
   </button>
-</div>
+</form>
