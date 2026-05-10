@@ -94,6 +94,8 @@ export class RepositorySearchComponent {
       this.hasSearched.set(true);
     } catch (e) {
       this.items.set([]);
+      this.totalCount.set(0);
+      this.page.update((p) => Math.min(p, this.totalPages()));
       this.error.set(getHttpApiErrorMessage(e));
     } finally {
       this.isLoading.set(false);
