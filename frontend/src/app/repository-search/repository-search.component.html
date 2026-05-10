@@ -3,8 +3,10 @@
     [language]="language()"
     [changedAfter]="changedAfter()"
     [isLoading]="isLoading()"
-    (languageChange)="language.set($event)"
-    (changedAfterChange)="changedAfter.set($event)"
+    [languageError]="languageFieldError()"
+    [changedAfterError]="changedAfterFieldError()"
+    (languageChange)="onLanguageChange($event)"
+    (changedAfterChange)="onChangedAfterChange($event)"
     (search)="search()"
   />
 

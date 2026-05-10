@@ -3,6 +3,10 @@ import { firstValueFrom } from 'rxjs';
 
 import type { RepositoryItemDto } from '../git-repos.api';
 import { getHttpApiErrorMessage, GitReposApi } from '../git-repos.api';
+import {
+  hasSearchQueryFieldErrors,
+  validateSearchQuery,
+} from '../search-query-validation';
 import { RepositoryListComponent } from '../repository-list/repository-list.component';
 import { RepositoryPagerComponent } from '../repository-pager/repository-pager.component';
 import { RepositorySearchFormComponent } from '../repository-search-form/repository-search-form.component';
@@ -33,6 +37,8 @@ export class RepositorySearchComponent {
 
   protected readonly isLoading = signal(false);
   protected readonly error = signal<string | null>(null);
+  protected readonly languageFieldError = signal<string | null>(null);
+  protected readonly changedAfterFieldError = signal<string | null>(null);
   protected readonly items = signal<RepositoryItemDto[]>([]);
   protected readonly totalCount = signal(0);
   protected readonly hasSearched = signal(false);
@@ -46,7 +52,28 @@ export class RepositorySearchComponent {
 
   protected readonly hasError = computed(() => this.error() != null);
 
+  protected onLanguageChange(value: string) {
+    this.language.set(value);
+    this.languageFieldError.set(null);
+  }
+
+  protected onChangedAfterChange(value: string) {
+    this.changedAfter.set(value);
+    this.changedAfterFieldError.set(null);
+  }
+
+  private applySearchValidation(): boolean {
+    const errors = validateSearchQuery(this.language(), this.changedAfter());
+    this.languageFieldError.set(errors.language);
+    this.changedAfterFieldError.set(errors.changedAfter);
+    return !hasSearchQueryFieldErrors(errors);
+  }
+
   protected async search() {
+    this.error.set(null);
+    if (!this.applySearchValidation()) {
+      return;
+    }
     this.page.set(1);
     await this.fetchPage();
   }
@@ -74,7 +101,11 @@ export class RepositorySearchComponent {
   }
 
   private async fetchPage() {
-    const language = this.language().trim();
+    if (!this.applySearchValidation()) {
+      return;
+    }
+
+    const language = this.language().trim().toLowerCase();
     const changedAfter = this.changedAfter().trim();
 
     this.error.set(null);

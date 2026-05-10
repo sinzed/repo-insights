@@ -1,26 +1,37 @@
 <div class="form">
-  <div>
+  <div class="field">
     <label>
       Language
-      <input
+      <select
         [ngModel]="language()"
         (ngModelChange)="languageChange.emit($event)"
-        placeholder="e.g. typescript"
-        autocomplete="off"
-      />
+        [attr.aria-invalid]="languageError() ? 'true' : null"
+        [attr.aria-describedby]="languageError() ? 'language-error' : null"
+      >
+        @for (opt of languageOptions; track opt) {
+          <option [value]="opt">{{ opt }}</option>
+        }
+      </select>
     </label>
+    @if (languageError(); as err) {
+      <div id="language-error" class="fieldError" role="alert">{{ err }}</div>
+    }
   </div>
 
-  <div>
+  <div class="field">
     <label>
       Changed after (YYYY-MM-DD)
       <input
+        type="date"
         [ngModel]="changedAfter()"
         (ngModelChange)="changedAfterChange.emit($event)"
-        placeholder="e.g. 2026-05-07"
-        autocomplete="off"
+        [attr.aria-invalid]="changedAfterError() ? 'true' : null"
+        [attr.aria-describedby]="changedAfterError() ? 'changed-after-error' : null"
       />
     </label>
+    @if (changedAfterError(); as err) {
+      <div id="changed-after-error" class="fieldError" role="alert">{{ err }}</div>
+    }
   </div>
 
   <button type="button" (click)="search.emit()" [disabled]="isLoading()">

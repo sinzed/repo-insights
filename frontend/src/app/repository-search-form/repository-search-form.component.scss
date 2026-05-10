@@ -2,7 +2,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
   gap: 10px;
-  align-items: end;
+  align-items: start;
 }
 
 @media (max-width: 540px) {
@@ -19,6 +19,18 @@
   min-width: 0;
 }
 
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fieldError {
+  font-size: 12px;
+  line-height: 1.35;
+  color: #ff8a8a;
+}
+
 label {
   display: flex;
   flex-direction: column;
@@ -27,7 +39,8 @@ label {
   opacity: 0.85;
 }
 
-input {
+input,
+select {
   box-sizing: border-box;
   width: 100%;
   min-width: 0;
@@ -36,6 +49,15 @@ input {
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: #0b1020;
   color: inherit;
+}
+
+select {
+  height: 42px;
+  cursor: pointer;
+}
+
+.form > button {
+  align-self: end;
 }
 
 button {
