@@ -22,7 +22,9 @@
 
   <div class="field">
     <label>
-      Changed after (YYYY-MM-DD)
+      Changed after
+      <span id="changed-after-hint" class="fieldHint">
+      </span>
       <input
         type="date"
         name="changedAfter"
@@ -30,7 +32,9 @@
         (ngModelChange)="changedAfterChange.emit($event)"
         [ngModelOptions]="{ standalone: true }"
         [attr.aria-invalid]="changedAfterError() ? 'true' : null"
-        [attr.aria-describedby]="changedAfterError() ? 'changed-after-error' : null"
+        [attr.aria-describedby]="
+          changedAfterError() ? 'changed-after-error changed-after-hint' : 'changed-after-hint'
+        "
       />
     </label>
     @if (changedAfterError(); as err) {
