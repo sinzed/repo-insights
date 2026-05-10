@@ -7,7 +7,10 @@ import {
 } from '../infrastructure/github/github-fetch-timeout';
 import type { GithubSearchGitReposRaw } from '../infrastructure/github/github-search-repository.raw';
 import { GithubSearchGitReposMapper } from '../infrastructure/mappers/github-search-git-repos.mapper';
-import { SearchGitReposResponseDto } from './dto/search-git-repos-response.dto';
+import {
+  RepositoryItemDto,
+  SearchGitReposResponseDto,
+} from './dto/search-git-repos-response.dto';
 import { isAllowedGithubSearchLanguage } from './github-search-language';
 import { RepositoryScoringService } from './repository-scoring.service';
 
@@ -140,12 +143,16 @@ export class GitReposService {
         HttpStatus.BAD_GATEWAY,
       );
     }
-    const dto =
-      this.githubSearchGitReposMapper.toSearchGitReposResponseDto(raw);
+    const mapped = this.githubSearchGitReposMapper.mapGithubSearchResponse(raw);
 
-    for (const item of dto.items) {
-      item.rankScore = this.repositoryScoringService.computeRankScore(item);
-    }
+    const dto = new SearchGitReposResponseDto();
+    dto.totalCount = mapped.totalCount;
+    dto.items = mapped.items.map(
+      (item): RepositoryItemDto => ({
+        ...item,
+        rankScore: this.repositoryScoringService.computeRankScore(item),
+      }),
+    );
     dto.items.sort((a, b) => b.rankScore - a.rankScore);
 
     return dto;

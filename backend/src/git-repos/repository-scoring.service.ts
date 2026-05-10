@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { RepositoryItemDto } from './dto/search-git-repos-response.dto';
+import type { RepositoryItemGithubMapped } from './dto/search-git-repos-response.dto';
 
 @Injectable()
 export class RepositoryScoringService {
-  computeRankScore(item: RepositoryItemDto): number {
+  computeRankScore(item: RepositoryItemGithubMapped): number {
     const stars = Math.max(0, item.stargazersCount ?? 0);
     const forks = Math.max(0, item.forksCount ?? 0);
 

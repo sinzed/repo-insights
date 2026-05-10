@@ -31,8 +31,21 @@ export class RepositoryItemDto {
   @ApiProperty({ example: '2026-05-01T12:00:00Z' })
   updatedAt!: string;
 
-  @ApiProperty({ description: 'Server-computed ranking score', example: 0.85 })
+  @ApiProperty({
+    description:
+      'Computed after GitHub items are mapped into this shape (not present on GitHub payloads). Higher is better; typical magnitudes are ~0–15 for inactive repos up through tens and low hundreds for popular ones.',
+    example: 111.1,
+    minimum: 0,
+  })
   rankScore!: number;
+}
+
+/** Repository fields taken from GitHub before `rankScore` is assigned in `GitReposService`. */
+export type RepositoryItemGithubMapped = Omit<RepositoryItemDto, 'rankScore'>;
+
+export interface GithubSearchMappedResponse {
+  totalCount: number;
+  items: RepositoryItemGithubMapped[];
 }
 
 export class SearchGitReposResponseDto {
