@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {
+  IsEnum,
   IsInt,
   IsNotEmpty,
   IsOptional,
@@ -13,6 +14,7 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
+import { GithubSearchLanguage } from '../github-search-language';
 
 @ValidatorConstraint({ name: 'isCalendarDateString', async: false })
 class IsCalendarDateStringConstraint implements ValidatorConstraintInterface {
@@ -52,15 +54,21 @@ function IsCalendarDateString(validationOptions?: ValidationOptions) {
 
 export class SearchGitReposQueryDto {
   @ApiProperty({
-    example: 'typescript',
-    description: 'GitHub language filter (e.g. typescript, javascript)',
+    enum: GithubSearchLanguage,
+    enumName: 'GithubSearchLanguage',
+    example: GithubSearchLanguage.TypeScript,
+    description:
+      'Allowed GitHub repository language (linguist-style slug). Compare `github-search-language.ts`.',
   })
   @Transform(({ value }: { value: unknown }) =>
-    typeof value === 'string' ? value.trim() : value,
+    typeof value === 'string' ? value.trim().toLowerCase() : value,
   )
   @IsString()
   @IsNotEmpty({ message: 'Query parameter "language" is required' })
-  language!: string;
+  @IsEnum(GithubSearchLanguage, {
+    message: 'language must be one of the supported GitHub language values',
+  })
+  language!: GithubSearchLanguage;
 
   @ApiProperty({
     example: '2026-05-01',

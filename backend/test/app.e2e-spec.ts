@@ -37,6 +37,23 @@ describe('HTTP API (e2e)', () => {
       .expect(400);
   });
 
+  it('GET /git-repos rejects language values that could alter GitHub query semantics', () => {
+    return request(app.getHttpServer())
+      .get('/git-repos')
+      .query({
+        language: 'typescript repo:evil/evil',
+        changedAfter: '2026-05-01',
+      })
+      .expect(400);
+  });
+
+  it('GET /git-repos rejects languages outside the supported enum', () => {
+    return request(app.getHttpServer())
+      .get('/git-repos')
+      .query({ language: 'zig', changedAfter: '2026-05-01' })
+      .expect(400);
+  });
+
   it('GET /swagger-json exposes OpenAPI document', () => {
     return request(app.getHttpServer()).get('/swagger-json').expect(200);
   });

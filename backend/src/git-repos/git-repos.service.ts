@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import type { GithubSearchGitReposRaw } from '../infrastructure/github/github-search-repository.raw';
 import { GithubSearchGitReposMapper } from '../infrastructure/mappers/github-search-git-repos.mapper';
 import { SearchGitReposResponseDto } from './dto/search-git-repos-response.dto';
+import { isAllowedGithubSearchLanguage } from './github-search-language';
 import { RepositoryScoringService } from './repository-scoring.service';
 
 @Injectable()
@@ -20,6 +21,16 @@ export class GitReposService {
     page = 1,
     perPage = this.defaultPerPage,
   ): Promise<SearchGitReposResponseDto> {
+    if (!isAllowedGithubSearchLanguage(language)) {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'language must be one of the supported GitHub language values',
+          error: 'Bad Request',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     const q = `language:${language} pushed:>${changedAfter}`;
     const url = new URL(this.searchUrl);
     url.searchParams.set('q', q);

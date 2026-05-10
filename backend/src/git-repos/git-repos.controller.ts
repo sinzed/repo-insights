@@ -8,6 +8,7 @@ import {
 } from '@nestjs/swagger';
 import { SearchGitReposQueryDto } from './dto/search-git-repos-query.dto';
 import { SearchGitReposResponseDto } from './dto/search-git-repos-response.dto';
+import { GithubSearchLanguage } from './github-search-language';
 import { GitReposService } from './git-repos.service';
 
 @ApiTags('git-repos')
@@ -20,8 +21,10 @@ export class GitReposController {
   @ApiQuery({
     name: 'language',
     required: true,
-    example: 'typescript',
-    description: 'GitHub language filter (e.g. typescript, javascript)',
+    enum: GithubSearchLanguage,
+    example: GithubSearchLanguage.TypeScript,
+    description:
+      'Allowed GitHub repository language (see GithubSearchLanguage enum).',
   })
   @ApiQuery({
     name: 'changedAfter',
