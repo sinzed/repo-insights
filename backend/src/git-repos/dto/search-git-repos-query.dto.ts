@@ -16,6 +16,21 @@ import {
 } from 'class-validator';
 import { GithubSearchLanguage } from '../github-search-language';
 
+function optionalQueryInt(value: unknown): number | undefined {
+  if (value === undefined || value === null || value === '') {
+    return undefined;
+  }
+  if (typeof value === 'string') {
+    const n = Number.parseInt(value.trim(), 10);
+    return Number.isFinite(n) ? n : Number.NaN;
+  }
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    const n = Number.parseInt(String(Math.trunc(value)), 10);
+    return Number.isFinite(n) ? n : Number.NaN;
+  }
+  return Number.NaN;
+}
+
 @ValidatorConstraint({ name: 'isCalendarDateString', async: false })
 class IsCalendarDateStringConstraint implements ValidatorConstraintInterface {
   validate(value: unknown): boolean {
@@ -89,11 +104,7 @@ export class SearchGitReposQueryDto {
     default: 1,
   })
   @IsOptional()
-  @Transform(({ value }: { value: unknown }) => {
-    if (value === undefined || value === null || value === '') return undefined;
-    const n = Number.parseInt(String(value).trim(), 10);
-    return Number.isFinite(n) ? n : Number.NaN;
-  })
+  @Transform(({ value }: { value: unknown }) => optionalQueryInt(value))
   @IsInt({ message: 'page must be an integer' })
   @Min(1, { message: 'page must be at least 1' })
   page?: number;
@@ -107,11 +118,7 @@ export class SearchGitReposQueryDto {
     maximum: 100,
   })
   @IsOptional()
-  @Transform(({ value }: { value: unknown }) => {
-    if (value === undefined || value === null || value === '') return undefined;
-    const n = Number.parseInt(String(value).trim(), 10);
-    return Number.isFinite(n) ? n : Number.NaN;
-  })
+  @Transform(({ value }: { value: unknown }) => optionalQueryInt(value))
   @IsInt({ message: 'perPage must be an integer' })
   @Min(1, { message: 'perPage must be at least 1' })
   @Max(100, { message: 'perPage must not exceed 100' })

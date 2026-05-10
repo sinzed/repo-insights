@@ -52,6 +52,11 @@ describe('GitReposController', () => {
       perPage: 50,
     });
 
-    expect(service.searchGitRepos).toHaveBeenCalledWith('rust', '2026-01-15', 3, 50);
+    expect(service.searchGitRepos).toHaveBeenCalledWith(
+      'rust',
+      '2026-01-15',
+      3,
+      50,
+    );
   });
 });

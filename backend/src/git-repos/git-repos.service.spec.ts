@@ -8,6 +8,12 @@ import { RepositoryScoringService } from './repository-scoring.service';
 /** Matches {@link GitReposService} retry backoff. */
 const GITHUB_ERROR_RETRY_DELAY_MS = 6_000;
 
+function fetchArgToUrlString(arg: Parameters<typeof fetch>[0]): string {
+  if (typeof arg === 'string') return arg;
+  if (arg instanceof URL) return arg.href;
+  return arg.url;
+}
+
 function githubSuccessPayload(): GithubSearchGitReposRaw {
   return {
     total_count: 2,
@@ -81,13 +87,13 @@ describe('GitReposService', () => {
     fetchSpy.mockResolvedValue({
       ok: true,
       status: 200,
-      json: async () => githubSuccessPayload(),
+      json: () => Promise.resolve(githubSuccessPayload()),
     } as Response);
 
     await service.searchGitRepos('typescript', '2026-01-01', 2, 25);
 
     expect(fetchSpy).toHaveBeenCalledTimes(1);
-    const url = String(fetchSpy.mock.calls[0][0]);
+    const url = fetchArgToUrlString(fetchSpy.mock.calls[0][0]);
     expect(url).toContain('https://api.github.com/search/repositories');
     const q = new URL(url).searchParams.get('q');
     expect(q).toBe('language:typescript pushed:>2026-01-01');
@@ -101,7 +107,7 @@ describe('GitReposService', () => {
     fetchSpy.mockResolvedValue({
       ok: true,
       status: 200,
-      json: async () => githubSuccessPayload(),
+      json: () => Promise.resolve(githubSuccessPayload()),
     } as Response);
 
     const result = await service.searchGitRepos('typescript', '2026-05-01');
@@ -127,7 +133,7 @@ describe('GitReposService', () => {
       .mockResolvedValueOnce({
         ok: true,
         status: 200,
-        json: async () => githubSuccessPayload(),
+        json: () => Promise.resolve(githubSuccessPayload()),
       } as Response);
 
     const pending = service.searchGitRepos('typescript', '2026-05-01');
